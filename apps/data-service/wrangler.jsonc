@@ -3,12 +3,19 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "data-service",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-06-17",
-	"compatibility_flags": ["nodejs_compat"],
-	"observability": {
-		"enabled": true,
-	},
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "data-service",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-17",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "fa66bf38-e8d3-4116-a9bd-b31f73e59875",
+      "remote": true
+    }
+  ]
 }
