@@ -2,6 +2,7 @@ import { WorkerEntrypoint } from 'cloudflare:workers';
 import { App } from './hono/app';
 import { initDatabase } from '@repo/data-ops/database';
 import { QueueMessageSchema } from '@repo/data-ops/zod-schema/queue';
+import { handleLinkClick } from './queue-handlers/link-clicks';
 
 export default class DataService extends WorkerEntrypoint<Env> {
   constructor(ctx: ExecutionContext, env: Env) {
@@ -19,10 +20,10 @@ export default class DataService extends WorkerEntrypoint<Env> {
       console.log('Message Body:', message.body);
       const parsedMessage = QueueMessageSchema.safeParse(message.body);
       if (parsedMessage.success) {
-        // Process the valid message
-        console.log('Valid message:', parsedMessage.data);
         const event = parsedMessage.data;
+
         if (event.type === 'LINK_CLICK') {
+          await handleLinkClick(this.env, event);
         }
       } else {
         console.error('Invalid message format:', parsedMessage.error);
