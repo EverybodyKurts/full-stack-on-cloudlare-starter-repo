@@ -47,5 +47,8 @@
       "name": "destination-evaluation-workflow",
       "class_name": "DestinationEvaluationWorkflow"
     }
-  ]
+  ],
+  "ai": {
+    "binding": "AI"
+  }
 }
