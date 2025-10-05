@@ -1,6 +1,7 @@
 import { WorkflowEntrypoint, WorkflowStep, WorkflowEvent } from 'cloudflare:workers';
 import { collectDestinationInfo } from '@/helpers/browser-render';
 import { aiDestinationChecker } from '@/helpers/ai-destination-checker';
+import { addEvaluation } from '@repo/data-ops/queries/evaluations';
 
 export class DestinationEvaluationWorkflow extends WorkflowEntrypoint<Env, DestinationStatusEvaluationParams> {
   async run(event: Readonly<WorkflowEvent<DestinationStatusEvaluationParams>>, step: WorkflowStep): Promise<void> {
@@ -20,6 +21,24 @@ export class DestinationEvaluationWorkflow extends WorkflowEntrypoint<Env, Desti
         return await aiDestinationChecker(this.env, collectedData.bodyText);
       }
     );
+
+    const evaluationId = await step.do('Save evaluation in database', async () => {
+      return await addEvaluation({
+        linkId: event.payload.linkId,
+        status: aiStatus.status,
+        reason: aiStatus.statusReason,
+        accountId: event.payload.accountId,
+        destinationUrl: event.payload.destinationUrl,
+      });
+    });
+
+    await step.do('Backup destination HTML in R2', async () => {
+      const accountId = event.payload.accountId;
+      const r2PathHtml = `evaluations/${accountId}/html/${evaluationId}`;
+      const r2PathBodyText = `evaluations/${accountId}/body-text/${evaluationId}`;
+      await this.env.BUCKET.put(r2PathHtml, collectedData.html);
+      await this.env.BUCKET.put(r2PathBodyText, collectedData.bodyText);
+    });
 
     console.log('Collected Data:', collectedData);
   }
