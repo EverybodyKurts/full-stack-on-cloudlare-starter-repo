@@ -4,6 +4,7 @@ import { initDatabase } from '@repo/data-ops/database';
 import { QueueMessageSchema } from '@repo/data-ops/zod-schema/queue';
 import { handleLinkClick } from './queue-handlers/link-clicks';
 export { DestinationEvaluationWorkflow } from './workflows/destination-evaluation-workflow';
+export { EvaluationScheduler } from './durable-objects/evaluation-scheduler';
 
 export default class DataService extends WorkerEntrypoint<Env> {
   constructor(ctx: ExecutionContext, env: Env) {
@@ -31,6 +32,4 @@ export default class DataService extends WorkerEntrypoint<Env> {
       }
     }
   }
-
-  // async workflow(event: WorkflowEvent<unknown>, step: WorkflowStep): Promise<void> {
 }
