@@ -50,8 +50,8 @@ App.get('/do/:name', async (c) => {
   const doId: DurableObjectId = c.env.EVALUATION_SCHEDULER.idFromName(name);
   const stub: DurableObjectStub<EvaluationScheduler> = c.env.EVALUATION_SCHEDULER.get(doId);
 
-  await stub.increment();
-  const count = await stub.getCount();
+  // await stub.increment();
+  // const count = await stub.getCount();
 
-  return c.json({ count });
+  return c.json({});
 });

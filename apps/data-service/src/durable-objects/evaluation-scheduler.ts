@@ -1,22 +1,56 @@
 import { DurableObject } from 'cloudflare:workers';
+import moment from 'moment';
 
-export class EvaluationScheduler extends DurableObject {
-  count: number = 0;
+interface ClickData {
+  accountId: string;
+  linkId: string;
+  destinationUrl: string;
+  destinationCountryCode: string;
+}
+
+export class EvaluationScheduler extends DurableObject<Env> {
+  clickData: ClickData | undefined;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     ctx.blockConcurrencyWhile(async () => {
-      this.count = (await ctx.storage.get<number>('count')) || this.count;
+      this.clickData = await ctx.storage.get<ClickData>('click_data');
     });
   }
 
-  async increment(): Promise<number> {
-    this.count++;
-    await this.ctx.storage.put('count', this.count);
-    return this.count;
+  async collectLinkClick(accountId: string, linkId: string, destinationUrl: string, destinationCountryCode: string) {
+    this.clickData = {
+      accountId,
+      linkId,
+      destinationUrl,
+      destinationCountryCode,
+    };
+
+    await this.ctx.storage.put('click_data', this.clickData);
+
+    const alarm = await this.ctx.storage.getAlarm();
+
+    if (!alarm) {
+      // Set an alarm to trigger in 10 seconds
+      const tenSeconds = moment().add(10, 'seconds').valueOf();
+      await this.ctx.storage.setAlarm(tenSeconds);
+    }
   }
 
-  async getCount(): Promise<number> {
-    return this.count;
+  async alarm() {
+    console.log('Alarm triggered for EvaluationScheduler Durable Object');
+    const clickData = this.clickData;
+
+    if (!clickData) {
+      throw new Error('No click data found in Durable Object storage');
+    }
+
+    await this.env.DESTINATION_EVALUATION_WORKFLOW.create({
+      params: {
+        linkId: clickData.linkId,
+        destinationUrl: clickData.destinationUrl,
+        accountId: clickData.accountId,
+      },
+    });
   }
 }
