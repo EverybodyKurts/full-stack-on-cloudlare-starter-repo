@@ -73,6 +73,10 @@
     {
       "tag": "v1",
       "new_classes": ["EvaluationScheduler"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["LinkClickTracker"]
     }
   ]
 }
