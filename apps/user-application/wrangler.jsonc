@@ -6,7 +6,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "user-application",
   "main": "worker/index.ts",
-  "compatibility_date": "2025-06-17",
+  "compatibility_date": "2025-07-11",
   "assets": {
     "binding": "ASSETS",
     "not_found_handling": "single-page-application"
@@ -18,6 +18,13 @@
     {
       "binding": "DB",
       "database_id": "fa66bf38-e8d3-4116-a9bd-b31f73e59875",
+      "remote": true
+    }
+  ],
+  "services": [
+    {
+      "binding": "BACKEND_SERVICE",
+      "service": "data-service",
       "remote": true
     }
   ]
