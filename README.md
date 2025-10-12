@@ -1,1 +1,1 @@
-# cf-services-the-course-playground
+# Cloudflare Services - The Course
