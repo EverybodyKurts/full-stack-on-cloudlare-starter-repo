@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "cloudflare-docs": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://docs.mcp.cloudflare.com/sse"]
+    },
+    "cloudflare-worker-bindings": {
+      "command": "npx",
+      "args": ["mcp-remote", "https://bindings.mcp.cloudflare.com/sse"]
+    },
+    "cloudflare-worker-builds": {
+      "command": "npx",
+      "args": ["mcp-remote@latest", "https://builds.mcp.cloudflare.com/sse"]
+    }
+  },
+  "inputs": []
+}
