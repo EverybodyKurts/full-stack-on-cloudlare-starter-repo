@@ -83,4 +83,4 @@ temp/
 .wrangler/
 
 # Editor directories and files
-.vscode/
+# .vscode/
